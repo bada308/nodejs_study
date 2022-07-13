@@ -12,34 +12,22 @@ var app = http.createServer(function(request,response){
 
     if(pathname === '/'){         //Not found 오류 처리
       if(title === undefined){    // Home에 대한 처리
-        var title = 'Welcome';
-        var description = "Hello, Node.js";
+        
 
-        var template = `
-          <!doctype html>
-          <html>
-          <head>
-            <title>WEB1 - ${title}</title>
-            <meta charset="utf-8">
-          </head>
-          <body>
-            <h1><a href="/">WEB</a></h1>
-            <ol>
-              <li><a href="/?id=HTML">HTML</a></li>
-              <li><a href="/?id=CSS">CSS</a></li>
-              <li><a href="/?id=JavaScript">JavaScript</a></li>
-            </ol>
-            <h2>${title}</h2>
-            <p>${description}</p>
-          </body>
-          </html>
-        `;
+        fs.readdir('./data', function(error, filelist){       // 리스트 동적으로 구현
+          var title = 'Welcome';
+          var description = "Hello, Node.js";
 
-        response.writeHead(200);
-        response.end(template);
-      }
-      else{
-        fs.readFile(`data/${title}`, 'utf-8', function(err, description){
+          var list = '<ul>';
+
+          var i = 0;
+          while(i < filelist.length){
+            list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`
+            i = i + 1;
+          }
+
+          list += '</ul>';
+
           var template = `
           <!doctype html>
           <html>
@@ -49,11 +37,7 @@ var app = http.createServer(function(request,response){
           </head>
           <body>
             <h1><a href="/">WEB</a></h1>
-            <ol>
-              <li><a href="/?id=HTML">HTML</a></li>
-              <li><a href="/?id=CSS">CSS</a></li>
-              <li><a href="/?id=JavaScript">JavaScript</a></li>
-            </ol>
+            ${list}
             <h2>${title}</h2>
             <p>${description}</p>
           </body>
@@ -62,7 +46,44 @@ var app = http.createServer(function(request,response){
 
           response.writeHead(200);
           response.end(template);
-        });
+        })
+
+        
+      }
+      else{
+        fs.readFile(`data/${title}`, 'utf-8', function(err, description){
+          fs.readdir('./data', function(error, filelist){
+  
+            var list = '<ul>';
+  
+            var i = 0;
+            while(i < filelist.length){
+              list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`
+              i = i + 1;
+            }
+  
+            list += '</ul>';
+  
+            var template = `
+            <!doctype html>
+            <html>
+            <head>
+              <title>WEB1 - ${title}</title>
+              <meta charset="utf-8">
+            </head>
+            <body>
+              <h1><a href="/">WEB</a></h1>
+              ${list}
+              <h2>${title}</h2>
+              <p>${description}</p>
+            </body>
+            </html>
+            `;
+  
+            response.writeHead(200);
+            response.end(template);
+          })
+        })
       }
       
     } 
